@@ -1,0 +1,12 @@
+[project]
+name = "research-agent"
+version = "0.1.0"
+description = "A minimal durable research agent using DBOS and the OpenAI Responses API"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "dbos>=2.17.0",
+    "fastapi[standard]>=0.115.0",
+    "openai>=2.0.0",
+    "uvicorn>=0.30.0",
+]
