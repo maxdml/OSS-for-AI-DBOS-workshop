@@ -18,7 +18,7 @@ import os
 from pathlib import Path
 
 import uvicorn
-from dbos import DBOS, DBOSConfig, Queue, SetWorkflowID
+from dbos import DBOS, DBOSConfig, Queue
 from fastapi import FastAPI
 from openai import OpenAI
 from pydantic import BaseModel
@@ -153,19 +153,10 @@ class ResearchRequest(BaseModel):
 
 @app.post("/research")
 def start_research(request: ResearchRequest):
-    """Kick off a research workflow in the background and return its ID.
-
-    A deterministic workflow ID is derived from the request arguments, so
-    POSTing the same body twice resumes (or returns the result of) the same
-    run rather than starting a duplicate.
-    """
-    workflow_id = (
-        f"research-{request.topic}-{request.target_count}".replace(" ", "-").lower()
+    """Kick off a research workflow in the background and return its ID."""
+    handle = DBOS.start_workflow(
+        research_workflow, request.topic, request.target_count
     )
-    with SetWorkflowID(workflow_id):
-        handle = DBOS.start_workflow(
-            research_workflow, request.topic, request.target_count
-        )
     return {"workflow_id": handle.workflow_id, "status": "started"}
 
 
@@ -177,13 +168,9 @@ def enqueue_research(request: ResearchRequest):
     job to `research_queue` — useful when you want managed concurrency, rate
     limiting, or fan-out of many requests without overwhelming your LLM quota.
     """
-    workflow_id = (
-        f"research-{request.topic}-{request.target_count}".replace(" ", "-").lower()
+    handle = research_queue.enqueue(
+        research_workflow, request.topic, request.target_count
     )
-    with SetWorkflowID(workflow_id):
-        handle = research_queue.enqueue(
-            research_workflow, request.topic, request.target_count
-        )
     return {"workflow_id": handle.workflow_id, "status": "enqueued"}
 
 
