@@ -21,18 +21,26 @@ The model gets two tools: OpenAI's hosted `web_search` (resolved server-side, no
 
 ## Path A — Building with Claude Code
 
-1. Start Claude Code in an empty directory.
-2. Load the DBOS Python skill so Claude knows the framework's conventions:
+1. **Install the DBOS agent skills** (one-time setup):
+
+   ```bash
+   npx skills add dbos-inc/agent-skills
+   ```
+
+   This installs the `dbos-python` skill (along with the Go and TypeScript ones) under `~/.claude/skills/` so Claude Code can load it.
+
+2. Start Claude Code in an empty directory.
+3. Load the DBOS Python skill so Claude knows the framework's conventions:
 
    ```
    /skill dbos-python
    ```
 
-3. Give Claude a prompt like:
+4. Give Claude a prompt like:
 
    > Build a minimal DBOS Python app called `research-agent`. It should expose a single workflow `research_workflow(topic, target_count)` that runs an agent loop against OpenAI's Responses API. The model has two tools: the hosted `web_search` tool and a local `save_lead` tool implemented as a DBOS step that appends a row to `leads.csv`. Every LLM call must also be a DBOS step so turns are checkpointed. Use a deterministic workflow ID derived from the args so re-running with the same arguments resumes the same workflow. Keep it to a single `main.py` plus `pyproject.toml` and `dbos-config.yaml`.
 
-4. Ask Claude to explain the durability guarantees (what happens if you kill the process mid-loop) before running it.
+5. Ask Claude to explain the durability guarantees (what happens if you kill the process mid-loop) before running it.
 
 Tips:
 
@@ -75,13 +83,21 @@ Start the server — it stays up and accepts workflow requests over HTTP:
 ```bash
 export OPENAI_API_KEY=...
 export DBOS_SYSTEM_DATABASE_URL=postgresql://...
-export DBOS_CONDUCTOR_KEY=dbos_200239b0-0c53-4b02-b5ea-f1239eae0125_e79277e9-8256-4b68-a559-fcbce507248e
 
 uv sync
 uv run python main.py
 ```
 
-Once the app is running, it connects to [DBOS Conductor](https://console.dbos.dev) under the app name `workshop`. You can watch workflows execute, inspect steps, and replay runs from the Conductor dashboard.
+### Optional: connect to DBOS Conductor
+
+Set `DBOS_CONDUCTOR_KEY` before launch to stream workflow telemetry to [DBOS Conductor](https://console.dbos.dev) under the app name `workshop`:
+
+```bash
+export DBOS_CONDUCTOR_KEY=<your-conductor-key>
+uv run python main.py
+```
+
+With the key set, you can watch workflows execute, inspect steps, and replay runs from the Conductor dashboard. The app runs fine without it.
 
 Kick off a research run:
 
