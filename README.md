@@ -84,6 +84,7 @@ Start the server — it stays up and accepts workflow requests over HTTP:
 export OPENAI_API_KEY=...
 export DBOS_SYSTEM_DATABASE_URL=postgresql://...
 
+export SSL_CERT_FILE=$(uv run python -c "import certifi; print(certifi.where())") # fix ssl certs on some platforms
 uv sync
 uv run python main.py
 ```
