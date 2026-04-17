@@ -38,7 +38,7 @@ The model gets two tools: OpenAI's hosted `web_search` (resolved server-side, no
 
 4. Give Claude a prompt like:
 
-   > Build a minimal DBOS Python app called `research-agent`. It should expose a single workflow `research_workflow(topic, target_count)` that runs an agent loop against OpenAI's Responses API. The model has two tools: the hosted `web_search` tool and a local `save_lead` tool implemented as a DBOS step that appends a row to `leads.csv`. Every LLM call must also be a DBOS step so turns are checkpointed. Keep it to a single `main.py` plus `pyproject.toml` and `dbos-config.yaml`.
+   > Build a minimal DBOS Python app called `research-agent`. It should expose a single workflow `research_workflow(topic, target_count)` that runs an agent loop against OpenAI's Responses API. The model has two tools: the hosted `web_search` tool and a local `save_lead` tool implemented as a DBOS step that appends a row to `leads.csv`. Every LLM call must also be a DBOS step so turns are checkpointed. Keep it to a single `main.py` plus `pyproject.toml`.
 
 5. Ask Claude to explain the durability guarantees (what happens if you kill the process mid-loop) before running it.
 
